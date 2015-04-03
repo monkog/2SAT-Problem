@@ -9,7 +9,7 @@ namespace SAT2
         #region Private Members
         private string _filePath;
         #endregion Private Members
-        #region Public Properties        
+        #region Public Properties
         /// <summary>
         /// Gets or sets the path of the xml file with 2 sat problem.
         /// </summary>
@@ -41,7 +41,26 @@ namespace SAT2
             OpenFileDialog dialogWindow = new OpenFileDialog();
             dialogWindow.Filter = "XML(*.xml|*.xml";
             if (dialogWindow.ShowDialog() == true)
+            {
                 FilePath = dialogWindow.FileName;
+                SolveSatProblemCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private DelegateCommand _solveSatProblemCommand;
+        public DelegateCommand SolveSatProblemCommand { get
+        {
+            return _solveSatProblemCommand ??
+                   (_solveSatProblemCommand = new DelegateCommand(SolveSatProblemExecuted, SolveSatProblemCanExecute));
+        } }
+        private bool SolveSatProblemCanExecute()
+        {
+            return !string.IsNullOrEmpty(FilePath);
+        }
+        private void SolveSatProblemExecuted()
+        {
+            Sat2Problem problem = new Sat2Problem();
+            problem.Run(FilePath);
         }
         #endregion Commands
         public event PropertyChangedEventHandler PropertyChanged;

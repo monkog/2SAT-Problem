@@ -8,7 +8,7 @@
                 <TextBox IsEnabled="False" Width="300" Text="{Binding FilePath}"/>
                 <Button Content="..." Command="{Binding BrowsePathCommand}" Width="30" Margin="20,0,0,0"/>
             </StackPanel>
-            <Button Content="Run" Width="70"/>
+            <Button Content="Run" Width="70" Command="{Binding SolveSatProblemCommand}"/>
         </StackPanel>
     </Grid>
 </Window>
