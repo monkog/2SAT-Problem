@@ -77,5 +77,41 @@ namespace SAT2.Properties {
                 return ResourceManager.GetString("Sat2RootNodeName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _rozwiazanie.xml.
+        /// </summary>
+        internal static string SolutionFileNameSuffix {
+            get {
+                return ResourceManager.GetString("SolutionFileNameSuffix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solution.
+        /// </summary>
+        internal static string SolutionNode {
+            get {
+                return ResourceManager.GetString("SolutionNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to value.
+        /// </summary>
+        internal static string ValueNode {
+            get {
+                return ResourceManager.GetString("ValueNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to var.
+        /// </summary>
+        internal static string VarNode {
+            get {
+                return ResourceManager.GetString("VarNode", resourceCulture);
+            }
+        }
     }
 }

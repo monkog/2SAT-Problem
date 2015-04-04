@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using System.Xml;
 using SAT2.Properties;
 
@@ -46,22 +48,15 @@ namespace SAT2
                 to = new Vertex(yName);
                 _vertices.Add(yName, to);
                 if (isNegative)
-                    _vertices.Add(yName.Substring(1), new Vertex(yName));
+                    _vertices.Add(yName.Substring(1), new Vertex(yName.Substring(1)));
                 else
                     _vertices.Add("-" + yName, new Vertex("-" + yName));
             }
 
             _edges.Add(new Edge(from, to));
         }
-        #endregion Private Methods
-        #region Public Methods
-        /// <summary>
-        /// Calculates the 2SAT problem from the specified file.
-        /// </summary>
-        /// <param name="fileName">Name of the file.</param>
-        public void Run(string fileName)
+        private void CreateGraph(XmlNodeList formulas)
         {
-            var formulas = GetFormulasFromFile(fileName);
             _vertices = new Dictionary<string, Vertex>();
             _edges = new List<Edge>();
 
@@ -75,6 +70,44 @@ namespace SAT2
 
                 AddEdgeFromFormula(x, y);
             }
+        }
+        private bool FindValuations()
+        {
+            return true;
+        }
+        private void CreateResultFile(string fileName)
+        {
+            XmlDocument xml = new XmlDocument();
+            xml.AppendChild(xml.CreateElement(Resources.Sat2RootNodeName));
+            var root = xml.SelectSingleNode(Resources.Sat2RootNodeName);
+
+            foreach (var vertex in _vertices.Values.Where(x => !x.Name.StartsWith("-")))
+            {
+                var solution = xml.CreateElement(Resources.SolutionNode);
+                solution.SetAttribute(Resources.VarNode, vertex.Name);
+                solution.SetAttribute(Resources.ValueNode, (vertex.Value ? 1 : 0).ToString());
+                root.AppendChild(solution);
+            }
+
+            xml.Save(fileName + Resources.SolutionFileNameSuffix);
+        }
+        #endregion Private Methods
+        #region Public Methods
+        /// <summary>
+        /// Calculates the 2SAT problem from the specified file.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        public void Run(string fileName)
+        {
+            var formulas = GetFormulasFromFile(fileName);
+            CreateGraph(formulas);
+            if (FindValuations())
+            {
+                CreateResultFile(fileName);
+                MessageBox.Show("Done");
+            }
+            else
+                MessageBox.Show("No answers");
         }
         #endregion Public Methods
         #region Commands

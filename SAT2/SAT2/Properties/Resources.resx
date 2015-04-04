@@ -120,4 +120,16 @@
   <data name="Sat2ConditionNodeName" xml:space="preserve">
     <value>Condition</value>
   </data>
+  <data name="SolutionNode" xml:space="preserve">
+    <value>Solution</value>
+  </data>
+  <data name="VarNode" xml:space="preserve">
+    <value>var</value>
+  </data>
+  <data name="ValueNode" xml:space="preserve">
+    <value>value</value>
+  </data>
+  <data name="SolutionFileNameSuffix" xml:space="preserve">
+    <value>_rozwiazanie.xml</value>
+  </data>
 </root>
