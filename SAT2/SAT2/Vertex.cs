@@ -5,8 +5,9 @@
         #region Private Members
         private bool _isSet;
         private bool _value;
+        private string _name;
         #endregion Private Members
-        #region Public Properties        
+        #region Public Properties
         /// <summary>
         /// Gets the value indicating whether the value of the variable was already calculated.
         /// </summary>
@@ -23,12 +24,14 @@
                 _isSet = true;
             }
         }
+        public string Name { get { return _name; } }
         #endregion Public Properties
         #region Constructors
-        public Vertex()
+        public Vertex(string name)
         {
             _value = false;
             _isSet = false;
+            _name = name;
         }
         #endregion Constructors
     }

@@ -27,27 +27,31 @@ namespace SAT2
         private void AddEdgeFromFormula(XmlNode x, XmlNode y)
         {
             Vertex from, to;
-            bool isNegative = x.InnerText.StartsWith("-") ? true : false;
+            bool isNegative = x.InnerText.StartsWith("-");
             string xName = isNegative ? x.InnerText.Substring(1) : "-" + x.InnerText;
             if (!_vertices.TryGetValue(xName, out from))
             {
-                _vertices.Add(xName, new Vertex());
+                from = new Vertex(xName);
+                _vertices.Add(xName, from);
                 if (isNegative)
-                    _vertices.Add("-" + xName, new Vertex());
+                    _vertices.Add("-" + xName, new Vertex("-" + xName));
                 else
-                    _vertices.Add(xName.Substring(1), new Vertex());
+                    _vertices.Add(xName.Substring(1), new Vertex(xName.Substring(1)));
             }
 
-            isNegative = y.InnerText.StartsWith("-") ? true : false;
+            isNegative = y.InnerText.StartsWith("-");
             string yName = y.InnerText;
             if (!_vertices.TryGetValue(yName, out to))
             {
-                _vertices.Add(yName, new Vertex());
+                to = new Vertex(yName);
+                _vertices.Add(yName, to);
                 if (isNegative)
-                    _vertices.Add(yName.Substring(1), new Vertex());
+                    _vertices.Add(yName.Substring(1), new Vertex(yName));
                 else
-                    _vertices.Add("-" + yName, new Vertex());
+                    _vertices.Add("-" + yName, new Vertex("-" + yName));
             }
+
+            _edges.Add(new Edge(from, to));
         }
         #endregion Private Methods
         #region Public Methods
