@@ -54,6 +54,7 @@ namespace SAT2
             }
 
             _edges.Add(new Edge(from, to));
+            from.Neighbours.Add(to);
         }
         private void CreateGraph(XmlNodeList formulas)
         {
@@ -73,7 +74,46 @@ namespace SAT2
         }
         private bool FindValuations()
         {
+            var vertex = FindFirstVertex();
+            if (vertex == null) return false;
+            if (!ValuateGraphFromVertex(vertex)) return false;
+
+            foreach (var v in _vertices.Where(x => !x.Value.IsSet))
+                if (!ValuateGraphFromVertex(v)) return false;
+
             return true;
+        }
+        private bool ValuateGraphFromVertex(object vertex)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// Finds the first vertex that does not have a path to its negated value
+        /// </summary>
+        /// <returns>Found vertex or null</returns>
+        private KeyValuePair<string, Vertex>? FindFirstVertex()
+        {
+            foreach (var v in _vertices.Where(x => !x.Value.IsSet))
+            {
+                var negation = _vertices[v.Key.StartsWith("-") ? v.Key.Substring(1) : "-" + v.Key];
+                if (!CheckExistingPath(v.Value, negation))
+                    return v;
+            }
+            return null;
+        }
+        /// <summary>
+        /// Checks whethe the path between two given vertices exists
+        /// </summary>
+        /// <param name="vertex">Start vertex</param>
+        /// <param name="negation">Destination vertex</param>
+        /// <returns>True if the path from the start to the destination exists, otherwise false</returns>
+        private bool CheckExistingPath(Vertex vertex, Vertex negation)
+        {
+            foreach (var neighbour in vertex.Neighbours)
+                if (CheckExistingPath(neighbour, negation))
+                    return true;
+
+            return false;
         }
         private void CreateResultFile(string fileName)
         {
@@ -110,8 +150,6 @@ namespace SAT2
                 MessageBox.Show("No answers");
         }
         #endregion Public Methods
-        #region Commands
-        #endregion Commands
     }
 }
 
