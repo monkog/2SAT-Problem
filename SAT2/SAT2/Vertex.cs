@@ -32,6 +32,10 @@ namespace SAT2
         /// Gets all the vertices that the current vertex has edge to.
         /// </summary>
         public List<Vertex> Neighbours { get { return _neighbours; } }
+        /// <summary>
+        /// Gets the vertex with the oposite value.
+        /// </summary>
+        public Vertex Negation { get; set; }
         #endregion Public Properties
         #region Constructors
         public Vertex(string name)
