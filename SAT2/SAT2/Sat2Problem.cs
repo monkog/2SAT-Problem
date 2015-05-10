@@ -35,10 +35,14 @@ namespace SAT2
             {
                 from = new Vertex(xName);
                 _vertices.Add(xName, from);
+                Vertex negation;
+
                 if (isNegative)
-                    _vertices.Add("-" + xName, new Vertex("-" + xName));
+                    _vertices.Add("-" + xName, negation = new Vertex("-" + xName));
                 else
-                    _vertices.Add(xName.Substring(1), new Vertex(xName.Substring(1)));
+                    _vertices.Add(xName.Substring(1), negation = new Vertex(xName.Substring(1)));
+                from.Negation = negation;
+                negation.Negation = from;
             }
 
             isNegative = y.InnerText.StartsWith("-");
@@ -47,13 +51,18 @@ namespace SAT2
             {
                 to = new Vertex(yName);
                 _vertices.Add(yName, to);
+                Vertex negation;
+
                 if (isNegative)
-                    _vertices.Add(yName.Substring(1), new Vertex(yName.Substring(1)));
+                    _vertices.Add(yName.Substring(1), negation = new Vertex(yName.Substring(1)));
                 else
-                    _vertices.Add("-" + yName, new Vertex("-" + yName));
+                    _vertices.Add("-" + yName, negation = new Vertex("-" + yName));
+                to.Negation = negation;
+                negation.Negation = to;
             }
 
             _edges.Add(new Edge(from, to));
+            from.Neighbours.Add(to);
         }
         private void CreateGraph(XmlNodeList formulas)
         {
@@ -73,7 +82,59 @@ namespace SAT2
         }
         private bool FindValuations()
         {
+            var vertex = FindFirstVertex();
+            if (vertex == null) return false;
+            if (!ValuateGraphFromVertex(vertex.Value.Value)) return false;
+
+            foreach (var v in _vertices.Where(x => !x.Value.IsSet))
+                if (!ValuateGraphFromVertex(v.Value)) return false;
+
             return true;
+        }
+        private bool ValuateGraphFromVertex(Vertex vertex)
+        {
+            vertex.Value = true;
+
+            foreach (var neighbour in vertex.Neighbours)
+            {
+                if ((neighbour.IsSet && !neighbour.Value) || (neighbour.Negation.IsSet && neighbour.Negation.Value))
+                    return false;
+
+                if (!neighbour.IsSet)
+                {
+                    neighbour.Value = true;
+                    ValuateGraphFromVertex(neighbour);
+                }
+                if (!neighbour.Negation.IsSet)
+                    neighbour.Negation.Value = false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// Finds the first vertex that does not have a path to its negated value
+        /// </summary>
+        /// <returns>Found vertex or null</returns>
+        private KeyValuePair<string, Vertex>? FindFirstVertex()
+        {
+            foreach (var v in _vertices.Where(x => !x.Value.IsSet))
+                if (!CheckExistingPath(v.Value, v.Value.Negation))
+                    return v;
+
+            return null;
+        }
+        /// <summary>
+        /// Checks whethe the path between two given vertices exists
+        /// </summary>
+        /// <param name="vertex">Start vertex</param>
+        /// <param name="negation">Destination vertex</param>
+        /// <returns>True if the path from the start to the destination exists, otherwise false</returns>
+        private bool CheckExistingPath(Vertex vertex, Vertex negation)
+        {
+            foreach (var neighbour in vertex.Neighbours)
+                if (CheckExistingPath(neighbour, negation))
+                    return true;
+
+            return false;
         }
         private void CreateResultFile(string fileName)
         {
@@ -110,8 +171,6 @@ namespace SAT2
                 MessageBox.Show("No answers");
         }
         #endregion Public Methods
-        #region Commands
-        #endregion Commands
     }
 }
 

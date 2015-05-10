@@ -1,8 +1,11 @@
-﻿namespace SAT2
+﻿using System.Collections.Generic;
+
+namespace SAT2
 {
     public class Vertex
     {
         #region Private Members
+        private List<Vertex> _neighbours;
         private bool _isSet;
         private bool _value;
         private string _name;
@@ -25,6 +28,14 @@
             }
         }
         public string Name { get { return _name; } }
+        /// <summary>
+        /// Gets all the vertices that the current vertex has edge to.
+        /// </summary>
+        public List<Vertex> Neighbours { get { return _neighbours; } }
+        /// <summary>
+        /// Gets the vertex with the oposite value.
+        /// </summary>
+        public Vertex Negation { get; set; }
         #endregion Public Properties
         #region Constructors
         public Vertex(string name)
@@ -32,6 +43,7 @@
             _value = false;
             _isSet = false;
             _name = name;
+            _neighbours = new List<Vertex>();
         }
         #endregion Constructors
     }
