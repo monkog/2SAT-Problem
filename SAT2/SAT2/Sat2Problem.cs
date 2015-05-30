@@ -178,7 +178,7 @@ namespace SAT2
             if (FindValuations())
             {
                 CreateResultFile(fileName);
-                MessageBox.Show("Done.");
+                MessageBox.Show("Done. Check file with results.");
             }
             else
                 MessageBox.Show("No answers.");

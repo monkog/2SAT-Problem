@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso-8859-2" ?>
+<SAT2>
+	<Condition x="a" y="b"/>
+	<Condition x="-a" y="-c"/>
+	<Condition x="b" y="c"/>
+	<Condition x="d" y="e"/>
+	<Condition x="-a" y="e"/>
+	<Condition x="b" y="d"/>
+	<Condition x="e" y="f"/>
+	<Condition x="-a" y="f"/>
+	<Condition x="a" y="-c"/>
+</SAT2>
