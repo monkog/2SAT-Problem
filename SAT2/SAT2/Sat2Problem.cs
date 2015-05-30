@@ -39,7 +39,7 @@ namespace SAT2
             var formulas = xml.DocumentElement.SelectNodes(Resources.Sat2ConditionNodeName);
             return formulas;
         }
-        public void AddEdgeFromFormula(XmlNode x, XmlNode y)
+        private void AddEdgeFromFormula(XmlNode x, XmlNode y)
         {
             Vertex from, to;
             bool isNegative = x.InnerText.StartsWith("-");
@@ -77,7 +77,7 @@ namespace SAT2
             from.Neighbours.Add(to);
             to.Negation.Neighbours.Add(from.Negation);
         }
-        public void CreateGraph(XmlNodeList formulas)
+        private void CreateGraph(XmlNodeList formulas)
         {
             foreach (XmlNode formula in formulas)
             {
@@ -90,10 +90,13 @@ namespace SAT2
                 AddEdgeFromFormula(x, y);
             }
         }
-        public bool FindValuations()
+        private bool FindValuations()
         {
             var vertex = FindFirstVertex();
             if (vertex == null) return false;
+            vertex.Value.Value.Value = true;
+            vertex.Value.Value.Negation.Value = false;
+
             if (!ValuateGraphFromVertex(vertex.Value.Value)) return false;
 
             foreach (var v in Vertices.Where(x => !x.Value.IsSet))
@@ -101,9 +104,9 @@ namespace SAT2
 
             return true;
         }
-        public bool ValuateGraphFromVertex(Vertex vertex)
+        private bool ValuateGraphFromVertex(Vertex vertex)
         {
-            vertex.Value = true;
+            if (vertex.IsSet && vertex.Value == false) return false;
             var verticesToEvaluate = new List<Vertex>();
 
             foreach (var neighbour in vertex.Neighbours)
@@ -119,7 +122,7 @@ namespace SAT2
                 }
             }
             foreach (var neighbour in verticesToEvaluate)
-                ValuateGraphFromVertex(neighbour);
+                if (!ValuateGraphFromVertex(neighbour)) return false;
             return true;
         }
         /// <summary>
@@ -128,10 +131,7 @@ namespace SAT2
         /// <returns>Found vertex or null</returns>
         private KeyValuePair<string, Vertex>? FindFirstVertex()
         {
-            foreach (var vertex in Vertices.Where(v=>v.Key.StartsWith("-")))
-                if (CheckExistingPath(vertex.Value, vertex.Value.Negation) && CheckExistingPath(vertex.Value.Negation, vertex.Value))
-                    return null;
-            foreach (var v in Vertices.Where(x => !x.Value.IsSet))
+            foreach (var v in Vertices)
                 if (!CheckExistingPath(v.Value, v.Value.Negation))
                     return v;
 
@@ -143,7 +143,7 @@ namespace SAT2
         /// <param name="vertex">Start vertex</param>
         /// <param name="negation">Destination vertex</param>
         /// <returns>True if the path from the start to the destination exists, otherwise false</returns>
-        public bool CheckExistingPath(Vertex vertex, Vertex negation)
+        private bool CheckExistingPath(Vertex vertex, Vertex negation)
         {
             if (vertex.Checked)
                 return false;
@@ -151,7 +151,7 @@ namespace SAT2
             if (vertex == negation)
                 return true;
             foreach (var neighbour in vertex.Neighbours)
-                 if (CheckExistingPath(neighbour, negation))
+                if (CheckExistingPath(neighbour, negation))
                     return true;
 
             return false;
@@ -183,37 +183,6 @@ namespace SAT2
             var formulas = GetFormulasFromFile(fileName);
             _timer.Start();
             CreateGraph(formulas);
-
-            //bool[,] hasPath = new bool[Vertices.Count, Vertices.Count];
-
-            //int index = 0;
-            //foreach (var vertex in Vertices)
-            //{
-            //    int index2 = 0;
-            //    foreach (var v in Vertices)
-            //    {
-            //        if (CheckExistingPath(vertex.Value, v.Value))
-            //            hasPath[index, index2] = true;
-            //        foreach (var vert in Vertices)
-            //            vert.Value.Checked = false;
-            //        index2++;
-            //    }
-            //    index++;
-            //}
-
-            //foreach (var vertex in Vertices)
-            //    Console.Write("\t\t" + vertex.Key);
-            //Console.Write("\n");
-            //index = 0;
-            //foreach (var vertex in Vertices)
-            //{
-            //    Console.Write(vertex.Key + "\t");
-            //    for (int j = 0; j < hasPath.GetLength(1); j++)
-            //        Console.Write(hasPath[index, j] + "\t");
-            //    Console.Write("\n");
-            //    index++;
-            //}
-
             bool result = FindValuations();
             _timer.Stop();
             if (result)
