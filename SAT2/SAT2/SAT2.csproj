@@ -65,7 +65,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Edge.cs" />
     <Compile Include="Sat2Problem.cs" />
     <Compile Include="Vertex.cs" />
     <Compile Include="ViewModel.cs" />

@@ -10,11 +10,17 @@ namespace SAT2
     public class Sat2Problem
     {
         #region Private Members
-        private Dictionary<string, Vertex> _vertices;
-        private List<Edge> _edges;
+        private readonly Dictionary<string, Vertex> _vertices;
         #endregion Private Members
         #region Public Properties
+        public Dictionary<string, Vertex> Vertices { get { return _vertices; } }
         #endregion Public Properties
+        #region Constructors
+        public Sat2Problem()
+        {
+            _vertices = new Dictionary<string, Vertex>();
+        }
+        #endregion Constructors
         #region Private Methods
         private static XmlNodeList GetFormulasFromFile(string fileName)
         {
@@ -26,49 +32,45 @@ namespace SAT2
             var formulas = xml.DocumentElement.SelectNodes(Resources.Sat2ConditionNodeName);
             return formulas;
         }
-        private void AddEdgeFromFormula(XmlNode x, XmlNode y)
+        public void AddEdgeFromFormula(XmlNode x, XmlNode y)
         {
             Vertex from, to;
             bool isNegative = x.InnerText.StartsWith("-");
             string xName = isNegative ? x.InnerText.Substring(1) : "-" + x.InnerText;
-            if (!_vertices.TryGetValue(xName, out from))
+            if (!Vertices.TryGetValue(xName, out from))
             {
                 from = new Vertex(xName);
-                _vertices.Add(xName, from);
+                Vertices.Add(xName, from);
                 Vertex negation;
 
                 if (isNegative)
-                    _vertices.Add("-" + xName, negation = new Vertex("-" + xName));
+                    Vertices.Add("-" + xName, negation = new Vertex("-" + xName));
                 else
-                    _vertices.Add(xName.Substring(1), negation = new Vertex(xName.Substring(1)));
+                    Vertices.Add(xName.Substring(1), negation = new Vertex(xName.Substring(1)));
                 from.Negation = negation;
                 negation.Negation = from;
             }
 
             isNegative = y.InnerText.StartsWith("-");
             string yName = y.InnerText;
-            if (!_vertices.TryGetValue(yName, out to))
+            if (!Vertices.TryGetValue(yName, out to))
             {
                 to = new Vertex(yName);
-                _vertices.Add(yName, to);
+                Vertices.Add(yName, to);
                 Vertex negation;
 
                 if (isNegative)
-                    _vertices.Add(yName.Substring(1), negation = new Vertex(yName.Substring(1)));
+                    Vertices.Add(yName.Substring(1), negation = new Vertex(yName.Substring(1)));
                 else
-                    _vertices.Add("-" + yName, negation = new Vertex("-" + yName));
+                    Vertices.Add("-" + yName, negation = new Vertex("-" + yName));
                 to.Negation = negation;
                 negation.Negation = to;
             }
 
-            _edges.Add(new Edge(from, to));
             from.Neighbours.Add(to);
         }
-        private void CreateGraph(XmlNodeList formulas)
+        public void CreateGraph(XmlNodeList formulas)
         {
-            _vertices = new Dictionary<string, Vertex>();
-            _edges = new List<Edge>();
-
             foreach (XmlNode formula in formulas)
             {
                 if (formula.Attributes == null)
@@ -80,18 +82,18 @@ namespace SAT2
                 AddEdgeFromFormula(x, y);
             }
         }
-        private bool FindValuations()
+        public bool FindValuations()
         {
             var vertex = FindFirstVertex();
             if (vertex == null) return false;
             if (!ValuateGraphFromVertex(vertex.Value.Value)) return false;
 
-            foreach (var v in _vertices.Where(x => !x.Value.IsSet))
+            foreach (var v in Vertices.Where(x => !x.Value.IsSet))
                 if (!ValuateGraphFromVertex(v.Value)) return false;
 
             return true;
         }
-        private bool ValuateGraphFromVertex(Vertex vertex)
+        public bool ValuateGraphFromVertex(Vertex vertex)
         {
             vertex.Value = true;
 
@@ -114,9 +116,9 @@ namespace SAT2
         /// Finds the first vertex that does not have a path to its negated value
         /// </summary>
         /// <returns>Found vertex or null</returns>
-        private KeyValuePair<string, Vertex>? FindFirstVertex()
+        public KeyValuePair<string, Vertex>? FindFirstVertex()
         {
-            foreach (var v in _vertices.Where(x => !x.Value.IsSet))
+            foreach (var v in Vertices.Where(x => !x.Value.IsSet))
                 if (!CheckExistingPath(v.Value, v.Value.Negation))
                     return v;
 
@@ -128,7 +130,7 @@ namespace SAT2
         /// <param name="vertex">Start vertex</param>
         /// <param name="negation">Destination vertex</param>
         /// <returns>True if the path from the start to the destination exists, otherwise false</returns>
-        private bool CheckExistingPath(Vertex vertex, Vertex negation)
+        public bool CheckExistingPath(Vertex vertex, Vertex negation)
         {
             foreach (var neighbour in vertex.Neighbours)
                 if (CheckExistingPath(neighbour, negation))
@@ -136,13 +138,13 @@ namespace SAT2
 
             return false;
         }
-        private void CreateResultFile(string fileName)
+        public void CreateResultFile(string fileName)
         {
             XmlDocument xml = new XmlDocument();
             xml.AppendChild(xml.CreateElement(Resources.Sat2RootNodeName));
             var root = xml.SelectSingleNode(Resources.Sat2RootNodeName);
 
-            foreach (var vertex in _vertices.Values.Where(x => !x.Name.StartsWith("-")))
+            foreach (var vertex in Vertices.Values.Where(x => !x.Name.StartsWith("-")))
             {
                 var solution = xml.CreateElement(Resources.SolutionNode);
                 solution.SetAttribute(Resources.VarNode, vertex.Name);
