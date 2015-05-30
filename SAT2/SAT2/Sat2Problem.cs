@@ -132,6 +132,7 @@ namespace SAT2
         /// <returns>True if the path from the start to the destination exists, otherwise false</returns>
         public bool CheckExistingPath(Vertex vertex, Vertex negation)
         {
+            if (vertex == negation) return true;
             foreach (var neighbour in vertex.Neighbours)
                 if (CheckExistingPath(neighbour, negation))
                     return true;
