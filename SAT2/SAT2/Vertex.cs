@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace SAT2
 {
@@ -36,6 +37,10 @@ namespace SAT2
         /// Gets the vertex with the oposite value.
         /// </summary>
         public Vertex Negation { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Vertex"/> has already been checked.
+        /// </summary>
+        public bool Checked { get; set; }
         #endregion Public Properties
         #region Constructors
         public Vertex(string name)
@@ -44,6 +49,7 @@ namespace SAT2
             _isSet = false;
             _name = name;
             _neighbours = new List<Vertex>();
+            Checked = false;
         }
         #endregion Constructors
     }

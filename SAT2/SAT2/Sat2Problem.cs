@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Windows;
+using System.Windows.Threading;
 using System.Xml;
 using SAT2.Properties;
 
@@ -11,6 +13,8 @@ namespace SAT2
     {
         #region Private Members
         private readonly Dictionary<string, Vertex> _vertices;
+        private DispatcherTimer _timer;
+        private int _ticks;
         #endregion Private Members
         #region Public Properties
         public Dictionary<string, Vertex> Vertices { get { return _vertices; } }
@@ -19,6 +23,9 @@ namespace SAT2
         public Sat2Problem()
         {
             _vertices = new Dictionary<string, Vertex>();
+            _timer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 1) };
+            _ticks = 0;
+            _timer.Tick += (sender, args) => { _ticks++; };
         }
         #endregion Constructors
         #region Private Methods
@@ -32,7 +39,7 @@ namespace SAT2
             var formulas = xml.DocumentElement.SelectNodes(Resources.Sat2ConditionNodeName);
             return formulas;
         }
-        public void AddEdgeFromFormula(XmlNode x, XmlNode y)
+        private void AddEdgeFromFormula(XmlNode x, XmlNode y)
         {
             Vertex from, to;
             bool isNegative = x.InnerText.StartsWith("-");
@@ -68,8 +75,9 @@ namespace SAT2
             }
 
             from.Neighbours.Add(to);
+            to.Negation.Neighbours.Add(from.Negation);
         }
-        public void CreateGraph(XmlNodeList formulas)
+        private void CreateGraph(XmlNodeList formulas)
         {
             foreach (XmlNode formula in formulas)
             {
@@ -82,7 +90,7 @@ namespace SAT2
                 AddEdgeFromFormula(x, y);
             }
         }
-        public bool FindValuations()
+        private bool FindValuations()
         {
             var vertex = FindFirstVertex();
             if (vertex == null) return false;
@@ -93,7 +101,7 @@ namespace SAT2
 
             return true;
         }
-        public bool ValuateGraphFromVertex(Vertex vertex)
+        private bool ValuateGraphFromVertex(Vertex vertex)
         {
             vertex.Value = true;
 
@@ -116,7 +124,7 @@ namespace SAT2
         /// Finds the first vertex that does not have a path to its negated value
         /// </summary>
         /// <returns>Found vertex or null</returns>
-        public KeyValuePair<string, Vertex>? FindFirstVertex()
+        private KeyValuePair<string, Vertex>? FindFirstVertex()
         {
             foreach (var v in Vertices.Where(x => !x.Value.IsSet))
                 if (!CheckExistingPath(v.Value, v.Value.Negation))
@@ -130,16 +138,20 @@ namespace SAT2
         /// <param name="vertex">Start vertex</param>
         /// <param name="negation">Destination vertex</param>
         /// <returns>True if the path from the start to the destination exists, otherwise false</returns>
-        public bool CheckExistingPath(Vertex vertex, Vertex negation)
+        private bool CheckExistingPath(Vertex vertex, Vertex negation)
         {
-            if (vertex == negation) return true;
+            if (vertex.Checked)
+                return false;
+            vertex.Checked = true;
+            if (vertex == negation)
+                return true;
             foreach (var neighbour in vertex.Neighbours)
                 if (CheckExistingPath(neighbour, negation))
                     return true;
 
             return false;
         }
-        public void CreateResultFile(string fileName)
+        private void CreateResultFile(string fileName)
         {
             XmlDocument xml = new XmlDocument();
             xml.AppendChild(xml.CreateElement(Resources.Sat2RootNodeName));
@@ -164,14 +176,17 @@ namespace SAT2
         public void Run(string fileName)
         {
             var formulas = GetFormulasFromFile(fileName);
+            _timer.Start();
             CreateGraph(formulas);
-            if (FindValuations())
+            bool result = FindValuations();
+            _timer.Stop();
+            if (result)
             {
                 CreateResultFile(fileName);
-                MessageBox.Show("Done");
+                MessageBox.Show("Done. Time ellapsed: " + _ticks / 100 + ":" + _ticks % 100);
             }
             else
-                MessageBox.Show("No answers");
+                MessageBox.Show("No answers. Time ellapsed: " + _ticks / 100 + ":" + _ticks % 100);
         }
         #endregion Public Methods
     }
