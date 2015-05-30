@@ -10,8 +10,11 @@ namespace SAT2UnitTests
     {
         private const string SatProblemPassing = @"<?xml version=""1.0"" encoding=""iso-8859-2"" ?><SAT2><Condition x=""a"" y=""b""/><Condition x=""b"" y=""-c""/><Condition x=""-a"" y=""-c""/><Condition x=""-b"" y=""d""/></SAT2>";
         private const string SatProblemPassing2 = @"<?xml version=""1.0"" encoding=""iso-8859-2"" ?><SAT2><Condition x=""0"" y=""2""/><Condition x=""0"" y=""-3""/><Condition x=""1"" y=""-3""/><Condition x=""1"" y=""-4""/><Condition x=""2"" y=""-4""/><Condition x=""0"" y=""-5""/><Condition x=""1"" y=""-5""/><Condition x=""2"" y=""-5""/><Condition x=""3"" y=""6""/><Condition x=""4"" y=""6""/><Condition x=""5"" y=""6""/></SAT2>";
+        private const string SatProblemPassing3 = @"<?xml version=""1.0"" encoding=""iso-8859-2"" ?><SAT2><Condition x=""0"" y=""2""/><Condition x=""0"" y=""-3""/><Condition x=""3"" y=""6""/><Condition x=""0"" y=""-6""/><Condition x=""2"" y=""6""/></SAT2>";
+        
         private const string SatProblemUnpassing = @"<?xml version=""1.0"" encoding=""iso-8859-2"" ?><SAT2><Condition x=""a"" y=""b""/><Condition x=""-a"" y=""b""/><Condition x=""-a"" y=""-b""/><Condition x=""a"" y=""-b""/></SAT2>";
-
+        private const string SatProblemUnpassing2 = @"<?xml version=""1.0"" encoding=""iso-8859-2"" ?><SAT2><Condition x=""-a"" y=""-b""/><Condition x=""a"" y=""d""/><Condition x=""b"" y=""c""/><Condition x=""b"" y=""-c""/><Condition x=""-b"" y=""-d""/></SAT2>";
+        
         /// <summary>
         /// Tests adding vertices from formula.
         /// </summary>
@@ -270,6 +273,44 @@ namespace SAT2UnitTests
         /// </summary>
         [TestMethod]
         public void TestFindValuations()
+        {
+            var xml = new XmlDocument();
+            xml.LoadXml(SatProblemPassing);
+            var conditions = xml.DocumentElement.SelectNodes("Condition");
+            Sat2Problem problem = new Sat2Problem();
+            problem.CreateGraph(conditions);
+            Assert.IsTrue(problem.FindValuations());
+
+            var xmlPassing2 = new XmlDocument();
+            xmlPassing2.LoadXml(SatProblemPassing2);
+            var conditionsPassing2 = xmlPassing2.DocumentElement.SelectNodes("Condition");
+            Sat2Problem problemPassing2 = new Sat2Problem();
+            problemPassing2.CreateGraph(conditionsPassing2);
+            Assert.IsTrue(problemPassing2.FindValuations());
+
+            var xmlPassing3 = new XmlDocument();
+            xmlPassing3.LoadXml(SatProblemPassing3);
+            var conditionsPassing3 = xmlPassing3.DocumentElement.SelectNodes("Condition");
+            Sat2Problem problemPassing3 = new Sat2Problem();
+            problemPassing3.CreateGraph(conditionsPassing3);
+            Assert.IsTrue(problemPassing3.FindValuations());
+
+            var xmlUnpassed = new XmlDocument();
+            xmlUnpassed.LoadXml(SatProblemUnpassing);
+            var conditionsUnpassed = xmlUnpassed.DocumentElement.SelectNodes("Condition");
+            Sat2Problem problemUnpassed = new Sat2Problem();
+            problemUnpassed.CreateGraph(conditionsUnpassed);
+            Assert.IsFalse(problemUnpassed.FindValuations());
+
+            var xmlUnpassed2 = new XmlDocument();
+            xmlUnpassed2.LoadXml(SatProblemUnpassing2);
+            var conditionsUnpassed2 = xmlUnpassed2.DocumentElement.SelectNodes("Condition");
+            Sat2Problem problemUnpassed2 = new Sat2Problem();
+            problemUnpassed2.CreateGraph(conditionsUnpassed2);
+            Assert.IsFalse(problemUnpassed2.FindValuations());
+        }
+        [TestMethod]
+        public void TestValuateGraphFromVertex()
         {
             var xml = new XmlDocument();
             xml.LoadXml(SatProblemPassing);
