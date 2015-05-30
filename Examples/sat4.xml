@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-2" ?>
+<SAT2>
+	<Condition x="a" y="b"/>
+	<Condition x="a" y="-c"/>
+	<Condition x="b" y="c"/>
+	<Condition x="c" y="d"/>
+	<Condition x="a" y="d"/>
+	<Condition x="-d" y="e"/>
+	<Condition x="-b" y="e"/>
+	<Condition x="f" y="e"/>
+	<Condition x="-b" y="f"/>
+	<Condition x="a" y="f"/>
+	<Condition x="-d" y="-f"/>
+	<Condition x="g" y="a"/>
+	<Condition x="g" y="b"/>
+	<Condition x="-g" y="e"/>
+	<Condition x="-g" y="c"/>
+	<Condition x="a" y="h"/>
+	<Condition x="f" y="h"/>
+</SAT2>
