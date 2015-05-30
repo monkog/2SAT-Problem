@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
 using System.Windows;
-using System.Windows.Threading;
 using System.Xml;
 using SAT2.Properties;
 
@@ -13,8 +11,6 @@ namespace SAT2
     {
         #region Private Members
         private readonly Dictionary<string, Vertex> _vertices;
-        private DispatcherTimer _timer;
-        private int _ticks;
         #endregion Private Members
         #region Public Properties
         public Dictionary<string, Vertex> Vertices { get { return _vertices; } }
@@ -23,9 +19,6 @@ namespace SAT2
         public Sat2Problem()
         {
             _vertices = new Dictionary<string, Vertex>();
-            _timer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 1) };
-            _ticks = 0;
-            _timer.Tick += (sender, args) => { _ticks++; };
         }
         #endregion Constructors
         #region Private Methods
@@ -181,17 +174,14 @@ namespace SAT2
         public void Run(string fileName)
         {
             var formulas = GetFormulasFromFile(fileName);
-            _timer.Start();
             CreateGraph(formulas);
-            bool result = FindValuations();
-            _timer.Stop();
-            if (result)
+            if (FindValuations())
             {
                 CreateResultFile(fileName);
-                MessageBox.Show("Done. Time ellapsed: " + _ticks / 100 + ":" + _ticks % 100);
+                MessageBox.Show("Done.");
             }
             else
-                MessageBox.Show("No answers. Time ellapsed: " + _ticks / 100 + ":" + _ticks % 100);
+                MessageBox.Show("No answers.");
         }
         #endregion Public Methods
     }
