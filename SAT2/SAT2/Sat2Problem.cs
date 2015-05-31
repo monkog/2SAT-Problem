@@ -173,8 +173,16 @@ namespace SAT2
         /// <param name="fileName">Name of the file.</param>
         public void Run(string fileName)
         {
-            var formulas = GetFormulasFromFile(fileName);
-            CreateGraph(formulas);
+            try
+            {
+                var formulas = GetFormulasFromFile(fileName);
+                CreateGraph(formulas);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Invalid file format.");
+                return;
+            }
             if (FindValuations())
             {
                 CreateResultFile(fileName);

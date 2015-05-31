@@ -11,6 +11,7 @@ Debug/
 bin/
 obj/
 packages/
+*.xml_rozwiazanie.xml
 
 # Windows Installer files
 *.cab
@@ -47,3 +48,4 @@ Temporary Items
 .apdisk
 *.suo
 *.user
+SAT2/SAT2.sln.GhostDoc.xml
