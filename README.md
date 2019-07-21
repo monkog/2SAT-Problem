@@ -13,7 +13,7 @@ Each such formula can be converted to a specific form. The formula has to be a *
 ### Example
 For given formula  
 
-[(a ∨ b) ∧ (b ∨ ¬ c) ∧ (¬ a ∨ ¬ c) ∧ (¬ b ∨ d)](https://latex.codecogs.com/gif.latex?(a\vee&space;b)\wedge&space;(b\vee&space;\sim&space;c)\wedge&space;(\sim&space;a\vee&space;\sim&space;c)\wedge&space;(\sim&space;b\vee&space;d))
+![(a ∨ b) ∧ (b ∨ ¬ c) ∧ (¬ a ∨ ¬ c) ∧ (¬ b ∨ d)](https://latex.codecogs.com/gif.latex?(a\vee&space;b)\wedge&space;(b\vee&space;\sim&space;c)\wedge&space;(\sim&space;a\vee&space;\sim&space;c)\wedge&space;(\sim&space;b\vee&space;d))
 
 the input file should look like this
 
