@@ -32,7 +32,7 @@ namespace SAT2
             var formulas = xml.DocumentElement.SelectNodes(Resources.Sat2ConditionNodeName);
             return formulas;
         }
-        private void AddEdgeFromFormula(XmlNode x, XmlNode y)
+        public void AddEdgeFromFormula(XmlNode x, XmlNode y)
         {
             Vertex from, to;
             bool isNegative = x.InnerText.StartsWith("-");
@@ -70,7 +70,7 @@ namespace SAT2
             from.Neighbours.Add(to);
             to.Negation.Neighbours.Add(from.Negation);
         }
-        private void CreateGraph(XmlNodeList formulas)
+        public void CreateGraph(XmlNodeList formulas)
         {
             foreach (XmlNode formula in formulas)
             {
@@ -83,7 +83,8 @@ namespace SAT2
                 AddEdgeFromFormula(x, y);
             }
         }
-        private bool FindValuations()
+
+        public bool FindValuations()
         {
             var vertex = FindFirstVertex();
             if (vertex == null) return false;
@@ -136,7 +137,7 @@ namespace SAT2
         /// <param name="vertex">Start vertex</param>
         /// <param name="negation">Destination vertex</param>
         /// <returns>True if the path from the start to the destination exists, otherwise false</returns>
-        private bool CheckExistingPath(Vertex vertex, Vertex negation)
+        public bool CheckExistingPath(Vertex vertex, Vertex negation)
         {
             if (vertex.Checked)
                 return false;
